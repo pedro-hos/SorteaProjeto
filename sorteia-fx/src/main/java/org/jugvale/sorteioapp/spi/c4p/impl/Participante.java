@@ -1,6 +1,6 @@
-package org.jugvale.model.impl;
+package org.jugvale.sorteioapp.spi.c4p.impl;
 
-import org.jugvale.model.DefaultModel;
+import org.jugvale.sorteioapp.spi.c4p.model.DefaultModel;
 
 public class Participante extends DefaultModel {
 

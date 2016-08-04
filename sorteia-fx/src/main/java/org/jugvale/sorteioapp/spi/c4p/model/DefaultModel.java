@@ -1,4 +1,4 @@
-package org.jugvale.model;
+package org.jugvale.sorteioapp.spi.c4p.model;
 
 import java.io.Serializable;
 
