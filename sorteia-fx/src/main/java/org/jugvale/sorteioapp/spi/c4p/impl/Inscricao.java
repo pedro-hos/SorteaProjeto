@@ -1,8 +1,8 @@
-package org.jugvale.model.impl;
+package org.jugvale.sorteioapp.spi.c4p.impl;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.jugvale.model.DefaultModel;
+import org.jugvale.sorteioapp.spi.c4p.model.DefaultModel;
 
 @XmlRootElement
 @SuppressWarnings("serial")
@@ -43,6 +43,11 @@ public class Inscricao extends DefaultModel {
 
 	public void setData(String data) {
 		this.data = data;
+	}
+	
+	@Override
+	public String toString() {
+		return this.participante.getNome();
 	}
 
 }
