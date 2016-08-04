@@ -95,7 +95,11 @@ public class App extends Application {
 
 			@Override
 			public void handle(final long l) {
-				sorteia();
+				if(paraSortear.size() == 0) {
+					textoSorteado.setValue("Ops, ngm para sortear ...");
+				} else {
+					sorteia();
+				}
 			}
 
 			private void sorteia() {
@@ -170,7 +174,7 @@ public class App extends Application {
 
 	private void montaTela() {
 
-		txtSorteado.setFont(new Font(350));
+		txtSorteado.setFont(new Font(20));
 		txtSorteado.textProperty().bind(textoSorteado);
 		txtSorteado.setEffect(new InnerShadow(100, Color.BLACK));
 		txtSorteado.setFill(Color.RED);
@@ -209,7 +213,7 @@ public class App extends Application {
 	}*/
 
 	public String coletaSorteados() {
-		return todasSorteadas.stream().collect(Collectors.joining(",", "Sorteados: ", ""));
+		return todasSorteadas.stream().collect(Collectors.joining(", ", "Sorteados: ", ""));
 	}
 
 	private static List<Object> coletaParticipantes() {
