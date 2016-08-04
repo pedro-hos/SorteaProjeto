@@ -51,8 +51,7 @@ import javafx.util.Duration;
  * @author william
  */
 public class SorteaProjeto2 extends Application {
-
-
+	
 	// ARQUIVOS CARREGADOS
 	final String AUDIO_URL = getClass().getResource("/audio/ssantos.mp3").toString();
 	final ImageView IMG_PARAR = new ImageView(new Image("/icones/parar.png"));
@@ -118,31 +117,31 @@ public class SorteaProjeto2 extends Application {
 	public static void main( final String[] args ) {
 		launch(args);
 	}
-
+	
 	@Override
 	public void start( final Stage stage ) {
+		
 		appService = SorteioAppService.Factory.get();
 		configuraLayout();
 		configuraEngine();
 		configuraListeners();
-
+		
 		// toca a música pra sempre
 		clip.setCycleCount(-1);
-
-
+		
 		stage.setScene(new Scene(new StackPane(imgFundo, raiz)));
 		stage.setTitle(TITULO);
 		stage.setWidth(LARGURA_APP);
 		stage.setHeight(ALTURA_APP);
 		stage.show();
 	}
-
+	
 	private void configuraLayout() {
 		pnlDetalhes.visibleProperty().bind(btnDetalhes.selectedProperty());
 		pnlDetalhes.add(new Label("Itens para sortear"), 0, 0);
 		pnlDetalhes.add(lstParaSortear, 0, 1);
 		pnlDetalhes.add(new Label("Itens sorteados"), 1, 0);
-		pnlDetalhes.add(lstSorteados, 1, 1);		
+		pnlDetalhes.add(lstSorteados, 1, 1);
 		pnlDetalhes.setVgap(10);
 		pnlDetalhes.setHgap(30);
 		pnlDetalhes.setAlignment(Pos.CENTER);
@@ -167,7 +166,7 @@ public class SorteaProjeto2 extends Application {
 		sldFonte.setMaxWidth(80);
 		sldFonte.setMax(FONTE_SORTEIO);
 		sldFonte.setValue(FONTE_SORTEIO);
-
+		
 		// botões só estão habilitados de acordo com a timeline e com a lista
 		btnComecar.disableProperty().bind(tocando.or(listaVazia));
 		btnLimpar.disableProperty().bind(tocando);
@@ -187,14 +186,14 @@ public class SorteaProjeto2 extends Application {
 		animacaoAposSorteio.setToValue(0);
 		animacaoAposSorteio.setNode(txtSorteado);
 	}
-
+	
 	private void configuraListeners() {
-		sldFonte.valueProperty().addListener((o, v, n) -> {
+		sldFonte.valueProperty().addListener(( o, v, n ) -> {
 			txtSorteado.setFont(Font.font(n.doubleValue()));
 		});
 		
-		btnDetalhes.selectedProperty().addListener((o, v, n) -> {
-			if(n) {
+		btnDetalhes.selectedProperty().addListener(( o, v, n ) -> {
+			if (n) {
 				atualizaListas();
 			}
 		});
@@ -204,37 +203,45 @@ public class SorteaProjeto2 extends Application {
 			tocando.set(true);
 			clip.play();
 		});
+		
 		// muito código aqui... melhorar
 		btnParar.setOnAction(e -> {
+			
 			timerPrincipal.stop();
 			tocando.set(false);
 			clip.stop();
+			
 			final String textoSorteadoAtual = txtSorteado.getText();
+			
 			// remove o valor já sorteado dos números para sortear
 			for (int i = 0; i < paraSortear.size(); i++) {
-				if(paraSortear.get(i).toString().equals(textoSorteadoAtual)) {
+				if (paraSortear.get(i).toString().equals(textoSorteadoAtual)) {
 					paraSortear.remove(i);
 					break;
 				}
 			}
-		//	paraSortear.remove(textoSorteadoAtual);
+			
 			// atualiza a lista de textos sorteados
 			todasSorteadas.add(textoSorteadoAtual);
+			
 			// atualiza os textos da tela com valores para sortear e já sorteados
 			txtSorteadas.setText(coletaSorteados());
 			txtParaSortear.setText(coletaParaSortear());
+			
 			// se a lista esvaziou, configura nosso booleano, aí desabilita o botão de start
 			listaVazia.set(paraSortear.isEmpty());
+			
 			// toca animação pós efeito
 			animacaoAposSorteio.play();
 			atualizaListas();
 		});
 		
-		EventHandler<ActionEvent> limpar = e -> {
+		final EventHandler<ActionEvent> limpar = e -> {
 			todasSorteadas.clear();
 			txtSorteadas.setText("");
 			textoSorteado.set(INICIAL);
-			if(dadosExternos == null) {
+			
+			if (dadosExternos == null) {
 				paraSortear = geraListaNumericaSorteio(maxSorteio);
 			} else {
 				paraSortear = new ArrayList<Object>();
@@ -247,19 +254,21 @@ public class SorteaProjeto2 extends Application {
 		};
 		
 		btnGerar.setOnAction(e -> {
-			int novoMax  = pedeNovoMaximo();
-			if(novoMax != maxSorteio) {
+			final int novoMax = pedeNovoMaximo();
+			
+			if (novoMax != maxSorteio) {
 				dadosExternos = null;
 				maxSorteio = novoMax;
 				limpar.handle(e);
 			}
+			
 		});
 		
 		btnParticipantes.setOnAction(e -> {
-			if(confirmar("Buscar dados externos?")) {
+			if (confirmar("Buscar dados externos?")) {
 				// chamada assíncrona?
-				List<Object> resultado = appService.buscaValores();
-				if(resultado.size() == 0) {
+				final List<Object> resultado = appService.buscaValores();
+				if (resultado.size() == 0) {
 					alerta("Não foram retornados dados do acesso ao serviço!");
 				} else {
 					dadosExternos = resultado;
@@ -269,14 +278,15 @@ public class SorteaProjeto2 extends Application {
 		});
 		
 		btnLimpar.setOnAction(e -> {
-			if(confirmar("Limpar dados sorteados?")) {
+			if (confirmar("Limpar dados sorteados?")) {
 				limpar.handle(e);
 			}
 			
 		});
+		
 		// Engine de tudo..
 		timerPrincipal = new AnimationTimer() {
-
+			
 			@Override
 			public void handle( final long l ) {
 				// verifica se a lista está vazia. Se estiver, nada é sorteado...
@@ -288,53 +298,53 @@ public class SorteaProjeto2 extends Application {
 			}
 		};
 	}
-
+	
 	private void atualizaListas() {
 		lstParaSortear.getItems().clear();
 		paraSortear.forEach(lstParaSortear.getItems()::add);
 		lstSorteados.getItems().clear();
 		todasSorteadas.forEach(lstSorteados.getItems()::add);
 	}
-
+	
 	private List<Object> geraListaNumericaSorteio( final long max ) {
 		return LongStream.rangeClosed(1, max).mapToObj(String::valueOf).collect(Collectors.toList());
 	}
-
+	
 	private String coletaSorteados() {
-		// return todasSorteadas.stream().collect(Collectors.joining(",", "Sorteados: ", ""));
 		return "Sorteios realizados: " + todasSorteadas.size();
 	}
-
+	
 	private String coletaParaSortear() {
-		// return paraSortear.stream().map(String::valueOf).collect(Collectors.joining(",", "Para Sortear: ", ""));
 		return "Total para sortear: " + paraSortear.size();
 	}
 	
-	
 	private int pedeNovoMaximo() {
-		TextInputDialog dialogoNome = new TextInputDialog();
+		
+		final TextInputDialog dialogoNome = new TextInputDialog();
 		dialogoNome.setTitle("Gerar dados");
 		dialogoNome.setHeaderText("Qual o número máximo para gerar?");
 		dialogoNome.setContentText("Máximo: ");
+		
 		// se o usuário fornecer um valor, assignamos ao nome
 		try {
-			return dialogoNome.showAndWait().map(s ->  Integer.parseInt(s)).orElse(MAX_INICIAL);
-		} catch (NumberFormatException e) {
+			return dialogoNome.showAndWait().map(s -> Integer.parseInt(s)).orElse(MAX_INICIAL);
+		} catch (final NumberFormatException e) {
 			alerta("Valor inválido...");
 			return MAX_INICIAL;
 		}
 	}
-	private boolean confirmar(String msg) {
-		Alert dialogoConfirmacao = new Alert(Alert.AlertType.CONFIRMATION);
+	
+	private boolean confirmar( final String msg ) {
+		final Alert dialogoConfirmacao = new Alert(Alert.AlertType.CONFIRMATION);
 		dialogoConfirmacao.setHeaderText(msg);
 		dialogoConfirmacao.getButtonTypes().setAll(ButtonType.CANCEL, ButtonType.OK);
 		return dialogoConfirmacao.showAndWait().get() == ButtonType.OK;
 	}
 	
-	private boolean alerta(String msg) {
-        Alert dialogoConfirmacao = new Alert(Alert.AlertType.WARNING);
-        dialogoConfirmacao.setHeaderText(msg);
-        dialogoConfirmacao.getButtonTypes().setAll(ButtonType.OK);
-        return dialogoConfirmacao.showAndWait().get() == ButtonType.OK;
+	private boolean alerta( final String msg ) {
+		final Alert dialogoConfirmacao = new Alert(Alert.AlertType.WARNING);
+		dialogoConfirmacao.setHeaderText(msg);
+		dialogoConfirmacao.getButtonTypes().setAll(ButtonType.OK);
+		return dialogoConfirmacao.showAndWait().get() == ButtonType.OK;
 	}
 }
