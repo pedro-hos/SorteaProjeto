@@ -1,6 +1,8 @@
 SorteaProjeto
 =============
 
-Sortea números.
+Sortea números e dados vindo de um Web Service que você pode plugar on servidor.
 
-Projeto do Netbeans 8 e feito com Java 8
+Você pode gerar a lista de números ou implementar o SPI (Service Provider Interface) e trazer dados da sua própria fonte de dados.
+
+NO sorteio toca a música do Peão da Casa Própria, do Silvio Santos :-P.
